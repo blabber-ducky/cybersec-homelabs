@@ -1,0 +1,16 @@
+[socserver]
+10.10.0.100
+
+[socserver:vars]
+ansible_user=labadmin
+ansible_password=P@ssw0rd@123
+ansible_become_password=P@ssw0rd@123
+
+[windowsserver]
+10.10.0.101
+
+[windowclient1]
+10.10.0.201
+
+[windowsclient2]
+10.10.0.202

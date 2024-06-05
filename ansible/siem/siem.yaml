@@ -1,0 +1,88 @@
+---
+  - name: Update and upgrade APT packages
+    hosts: socserver
+    become: yes
+    tasks:
+      - name: Update the apt package index
+        apt:
+          update_cache: yes
+
+      - name: Upgrade all apt packages
+        apt:
+          upgrade: yes
+
+  - name: basic packages
+    hosts: socserver
+    become: yes
+    tasks:
+      - name: Install all the required basic packages
+        apt:
+          name:
+            - nano
+            - curl
+            - wget
+          state: present
+
+  - name: docker
+    hosts: socserver
+    become: yes
+    tasks:
+      - name: Install docker using convinience script
+        shell: |
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          chmod +x get-docker.sh
+          sudo sh get-docker.sh
+  
+  - name: Add a user docker group
+    hosts: socserver
+    become: yes
+    tasks:
+      - name: Ensure the user exists
+        user:
+          name: labadmin
+          state: present
+
+      - name: Ensure the group exists
+        group:
+          name: docker
+          state: present
+
+      - name: Add user to the group
+        user:
+          name: labadmin
+          groups: docker
+          append: yes
+
+      - name: Verify user is added to the group
+        command: id labadmin
+        register: user_info
+
+      - name: Output the user groups
+        debug:
+          msg: "User example_user is part of the following groups: {{ user_info.stdout }}"
+  
+  - name: wazuh
+    hosts: socserver
+    become: yes
+    tasks:
+      - name: Install wazuh SIEM
+        shell: |
+          curl -sO https://packages.wazuh.com/4.5/wazuh-install.sh
+          sudo bash ./wazuh-install.sh -a
+        register: job_result
+      
+      - name: Capture the User from the output
+        set_fact:
+          user: "{{ job_result.stdout | regex_search('User: (.+)', '\\1') }}"
+    
+      - name: Capture the Password from the output
+        set_fact:
+          password: "{{ job_result.stdout | regex_search('Password: (.+)', '\\1') }}"
+
+      - name: Output the captured User
+        debug:
+          msg: "Wazuh User: {{ user }}"
+
+      - name: Output the captured Password
+        debug:
+          msg: "Wazuh Password: {{ password }}"
