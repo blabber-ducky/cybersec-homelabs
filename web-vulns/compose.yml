@@ -11,6 +11,8 @@ services:
       - TZ=Asia/Dubai
     ports:
       - 80:80
+    networks:
+      - webvulns
 
 networks:
   webvulns:
