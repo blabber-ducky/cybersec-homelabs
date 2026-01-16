@@ -1,0 +1,16 @@
+services:
+  nginx-proxy:
+    container_name: nginx-proxy
+    image: nginx:stable-alpine3.23
+    volumes:
+      - ${NGINX_CONF}:/etc/nginx/nginx.conf
+      - ./logs:/var/logs/nginx
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Dubai
+    ports:
+      - 80:80
+
+networks:
+  webvulns:
