@@ -4,7 +4,7 @@ services:
     image: nginx:stable-alpine3.23
     volumes:
       - ${NGINX_CONF}:/etc/nginx/nginx.conf
-      - ./logs:/var/logs/nginx
+      - ./logs:/var/log/nginx
     environment:
       - PUID=1000
       - PGID=1000
